@@ -1,0 +1,79 @@
+/****************************************************************************
+CSE532 -- Project 2
+File name: Tables and data.txt
+Author(s): Harshini Kanaparthi (112687951 )
+Meghana vemulapalli (112670836 )
+Brief description: This file contains the data to be inserted and the creation of the tables
+****************************************************************************/
+
+//CREATING THE TABLES
+create type entityType as (id text, name text);
+create table entity of entityType (id PRIMARY KEY, name NOT NULL);
+create type ownershipType as (cid text, ownedshares float);
+create table person (PRIMARY KEY (id), ownership ownershipType[]) inherits (entity);
+create table company(primary key(id), industry text[], ownership ownershipType[]) inherits(entity);
+create table shares(cid text references company(id), totalsharevalue FLOAT, shareprice FLOAT, primary key(cid));
+create table board(cid text references company(id), pid text references person(id), primary key(cid,pid));
+
+//INSERTING THE VALUES TO THE TABLES
+INSERT INTO PERSON VALUES ('P1','Bill Doe', ARRAY[('C5',30000),('C8',100000)]::ownershipType[]);
+INSERT INTO PERSON VALUES ('P1','Bill Doe', ARRAY[('C5',30000),('C8',100000)]::ownershipType[]);
+INSERT INTO PERSON VALUES ('P2','Bill Seth', ARRAY[('C7',40000),('C4',20000)]::ownershipType[]);
+INSERT INTO PERSON VALUES ('P3','John Smyth', ARRAY[('C1',20000),('C2',20000),('C5',800000)]::ownershipType[]);
+INSERT INTO PERSON VALUES ('P4','Anne Smyle', ARRAY[('C2',30000),('C5',40000),('C3',500000)]::ownershipType[]);
+INSERT INTO PERSON VALUES ('P5','Steve Lamp',ARRAY[('C8',90000),('C1',50000),('C6',50000),('C2',70000)]::ownershipType[]);
+INSERT INTO PERSON VALUES ('P6','May Serge', ARRAY[('C8',-10000),('C9',-40000),('C3',500000),('C2',40000)]::ownershipType[]);
+INSERT INTO PERSON VALUES ('P7','Bill Public', ARRAY[('C7',80000),('C4',30000),('C1',30000),('C5',300000),('C2',-9000)]::ownershipType[]);
+INSERT INTO PERSON VALUES ('P8','Muck Lain', ARRAY[('C2',60000),('C6',-40000),('C9',-80000),('C8',30000)]::ownershipType[]);
+
+INSERT INTO company VALUES ('C1','QUE',ARRAY[('Software'),('Accounting')]::TEXT[],ARRAY[('C2',10000),('C4',20000),('C8',30000)]::ownershipType[]);
+INSERT INTO company VALUES ('C2','RHC',ARRAY[('Accounting')]::TEXT[],ARRAY[]::ownershipType[]);
+
+INSERT INTO company VALUES ('C3','Alf',ARRAY[('Software'),('Automotive')]::TEXT[],ARRAY[('C9',- 100000),('C4',400000),('C8',100000)]::ownershipType[]);
+INSERT INTO company VALUES ('C4','Elgog',ARRAY[('Software'),('Search')]::TEXT[],ARRAY[('C6',5000)]::ownershipType[]);
+INSERT INTO company VALUES ('C5','Tfos',ARRAY[('Software'),('Hardware')]::TEXT[],ARRAY[('C1',200000),('C6',30000),('C7',50000)]::ownershipType[]);
+INSERT INTO company VALUES ('C6','Ohay',ARRAY[('Search')]::TEXT[], ARRAY[]::ownershipType[]);
+INSERT INTO company VALUES ('C7','Gnow',ARRAY[('Search')]::TEXT[],ARRAY[]::ownershipType[]);
+INSERT INTO company VALUES ('C8','Elpa',ARRAY[('Software'),('Hardware')]::TEXT[], ARRAY[('C5',20000),('C4',30000)]::ownershipType[]);
+INSERT INTO company VALUES ('C9','Ydex',ARRAY[('Software'),('Search')]::TEXT[], ARRAY[]::ownershipType[]);
+INSERT INTO SHARES(CID, TOTALSHAREVALUE, SHAREPRICE) VALUES ('C1',150000, 30);
+INSERT INTO SHARES(CID, TOTALSHAREVALUE, SHAREPRICE) VALUES ('C2',250000, 20);
+INSERT INTO SHARES(CID, TOTALSHAREVALUE, SHAREPRICE) VALUES ('C3',10000000,700);
+INSERT INTO SHARES(CID, TOTALSHAREVALUE, SHAREPRICE) VALUES ('C4',1000000,400);
+INSERT INTO SHARES(CID, TOTALSHAREVALUE, SHAREPRICE) VALUES ('C5',10000000,300);
+INSERT INTO SHARES(CID, TOTALSHAREVALUE, SHAREPRICE) VALUES ('C6',180000,50);
+INSERT INTO SHARES(CID, TOTALSHAREVALUE, SHAREPRICE) VALUES ('C7',150000,300);
+INSERT INTO SHARES(CID, TOTALSHAREVALUE, SHAREPRICE) VALUES ('C8',9000000,300);
+INSERT INTO SHARES(CID, TOTALSHAREVALUE, SHAREPRICE) VALUES ('C9',5000000,100);
+INSERT INTO BOARD(CID, PID) VALUES ('C1','P3');
+INSERT INTO BOARD(CID, PID) VALUES ('C1','P1');
+INSERT INTO BOARD(CID, PID) VALUES ('C1','P4');
+INSERT INTO BOARD(CID, PID) VALUES ('C2','P1');
+INSERT INTO BOARD(CID, PID) VALUES ('C2','P2');
+INSERT INTO BOARD(CID, PID) VALUES ('C2','P5');
+INSERT INTO BOARD(CID, PID) VALUES ('C3','P6');
+INSERT INTO BOARD(CID, PID) VALUES ('C3','P7');
+INSERT INTO BOARD(CID, PID) VALUES ('C3','P1');
+INSERT INTO BOARD(CID, PID) VALUES ('C4','P6');
+INSERT INTO BOARD(CID, PID) VALUES ('C4','P7');
+INSERT INTO BOARD(CID, PID) VALUES ('C4','P5');
+INSERT INTO BOARD(CID, PID) VALUES ('C5','P2');
+INSERT INTO BOARD(CID, PID) VALUES ('C5','P5');
+INSERT INTO BOARD(CID, PID) VALUES ('C5','P4');
+INSERT INTO BOARD(CID, PID) VALUES ('C6','P2');
+INSERT INTO BOARD(CID, PID) VALUES ('C6','P4');
+INSERT INTO BOARD(CID, PID) VALUES ('C6','P8');
+INSERT INTO BOARD(CID, PID) VALUES ('C7','P2');
+INSERT INTO BOARD(CID, PID) VALUES ('C7','P3');
+INSERT INTO BOARD(CID, PID) VALUES ('C7','P4');
+INSERT INTO BOARD(CID, PID) VALUES ('C8','P2');
+INSERT INTO BOARD(CID, PID) VALUES ('C8','P3');
+INSERT INTO BOARD(CID, PID) VALUES ('C8','P8');
+INSERT INTO BOARD(CID, PID) VALUES ('C9','P3');
+INSERT INTO BOARD(CID, PID) VALUES ('C9','P6');
+INSERT INTO BOARD(CID, PID) VALUES ('C9','P8');
+
+
+
+
+

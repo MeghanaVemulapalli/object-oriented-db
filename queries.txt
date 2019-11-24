@@ -1,0 +1,62 @@
+/****************************************************************************
+CSE532 -- Project 2
+File name: queries.txt
+Author(s): Harshini Kanaparthi (112687951 )
+Meghana vemulapalli (112670836 )
+Brief description: This file contains Queries and views for 1 to 5 queries
+****************************************************************************/
+
+
+
+
+Query 1:
+
+SELECT comp.name 
+FROM company comp, board b, person per, unnest(per.ownership) as owns 
+WHERE per.id = b.pid and comp.id = owns.cid and comp.id = b.cid and owns.ownedshares>0 
+ORDER BY comp.name;
+
+
+Query 2:
+
+SELECT per.name, sum(owns.ownedshares*s.shareprice) 
+FROM person per, company comp, unnest(per.ownership) as owns, shares s 
+WHERE owns.cid = comp.id and comp.id = s.cid and owns.ownedshares>0 
+GROUP BY per.name 
+ORDER BY per.name;
+
+
+
+Query 3:
+
+SELECT comp.name, per.name 
+FROM company comp, person per, board b, unnest(per.ownership) as owns 
+WHERE b.pid = per.id and comp.id = b.cid and owns.cid = comp.id and owns.ownedshares > 0 and owns.ownedshares = (SELECT max(own.ownedshares) 
+														 FROM person p, unnest(p.ownership) as own 														 WHERE b.pid = p.id and own.cid = comp.id and own.ownedshares>0) 
+ORDER BY comp.name;
+
+Query 4:
+
+SELECT comp1.name, comp2.name 
+FROM company comp1, company comp2, unnest(comp1.industry) as indus1, unnest(comp2.industry) as indus2 
+WHERE comp1.id <> comp2.id and indus1=indus2 and NOT EXISTS(SELECT * 
+					      FROM person per2, board b, unnest(per2.ownership) as owns 
+					      WHERE comp2.id = b.cid and per2.id = b.pid and owns.ownedshares > 0 and NOT EXISTS(SELECT * 
+														    FROM person per1, board b1, unnest(per1.ownership) as own 
+                                                                                                                    WHERE comp1.id = b1.cid and b1.pid = per1.id and own.cid = owns.cid and own.ownedshares >= owns.ownedshares)) 
+GROUP BY comp1.name, comp2.name;
+
+
+Query 5:
+
+
+create recursive view direct_ownership(personid, cid, percent) as (select comp2.id, comp1.id, cast(cast(owns.ownedshares as FLOAT)/cast(s.totalsharevalue as FLOAT) as numeric(10,8))
+from company comp1, company comp2, shares s, unnest(comp2.ownership) as owns where owns.cid = comp1.id and comp1.id = s.cid and owns.ownedshares>0) UNION (select p.id, c1.id, cast(cast(own.ownedshares as FLOAT)/cast(s.totalsharevalue as FLOAT) as numeric(10,8))
+from company c1, person p, unnest(p.ownership) as own, shares s where own.cid = c1.id and s.cid = c1.id and own.ownedshares>0);
+CREATE VIEW
+
+create recursive view indirect_ownership(entity, cid, perc) as (select * from direct_ownership d) UNION select d.personid, i.cid, cast((d.percent*i.perc) as numeric(10,8)) from direct_ownership d, indirect_ownership i where d.cid = i.entity;
+CREATE VIEW
+
+with control_per as (select p.name as pname, c.name as cname, cast(sum(ind.perc*100) as numeric(10,4)) as percentage from person p,
+company c, indirect_ownership ind where p.id = ind.entity and c.id = ind.cid group by p.name, c.name) select * from control_per where percentage > 10 order by pname;
